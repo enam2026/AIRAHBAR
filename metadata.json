@@ -1,0 +1,6 @@
+{
+  "name": "AI TALIM RAHBAR",
+  "description": "An AI-powered digital learning counselor for AI TALIM, AI Design to Print, and Online Academy Setup by EBS Learning.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

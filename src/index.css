@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Hind Siliguri", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Hind Siliguri", sans-serif;
+  
+  --color-brand-blue: #006BFF;
+  --color-brand-blue-hover: #0053cc;
+  --color-brand-orange: #F59E0B;
+  --color-brand-orange-hover: #d97706;
+  --color-brand-dark: #111827;
+  --color-brand-slate: #4B5563;
+  --color-brand-ivory: #FFFDF7;
+  
+  /* Clean fallback mapping to ensure complete removal of green/gold */
+  --color-islamic-deep: #006BFF;
+  --color-islamic-emerald: #0053cc;
+  --color-islamic-soft: #f0f6ff;
+  --color-gold-soft: #F59E0B;
+  --color-gold-bright: #F59E0B;
+  --color-warm-ivory: #FFFDF7;
+  --color-warm-cream: #f4f8ff;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Base custom styles to pair typography */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-warm-ivory);
+  color: #1c1917;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
