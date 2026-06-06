@@ -7,6 +7,109 @@ import FAQsView from "./components/FAQsView";
 import SupportView from "./components/SupportView";
 import EnrollNowView from "./components/EnrollNowView";
 
+function isGreetingOnly(text: string): boolean {
+  const cleaned = text.trim().replace(/[?.,\/#!$%\^&\*;:{}=\-_`~()|৳।]/g, "").toLowerCase();
+  
+  const greetingsPhrases = [
+    "আসসালামু আলাইকুম",
+    "আসসালামু আলাইকুম ওয়া রহমাতুল্লাহ",
+    "আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহ",
+    "আসসালামু আলাইকুম ওয়া রহমাতুল্লাহ",
+    "আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহ",
+    "আসসালামুআলাইকুম",
+    "স্লামালিকুম",
+    "সালাম",
+    "হেই",
+    "হ্যালো",
+    "হাই",
+    "salam",
+    "slm",
+    "assalamualaikum",
+    "assalamu alaikum",
+    "hello",
+    "hi",
+    "hey",
+    "asalam",
+    "asalamu alaikum"
+  ];
+  const phraseMatches = greetingsPhrases.some(p => p.toLowerCase().trim() === cleaned);
+  if (phraseMatches) return true;
+
+  const words = cleaned.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return false;
+  
+  const greetingWords = [
+    "আসসালামু", "আলাইকুম", "ওয়া", "রহমাতুল্লাহ", "রাহমাতুল্লাহ", "ওয়া", "রাহমাতুল্লাহি", "ওয়াবারাকাতুহু",
+    "সালাম", "স্লামালিকুম", "হ্যালো", "হাই", "হেই", "কেমন", "আছেন", "ভাই", "মেন্টর", "আপু", "স্যার",
+    "salam", "slm", "walaikum", "assalamualaikum", "assalamu", "alaikum", "hello", "hi", "hey", "heyy", "bro", "brother", "sir", "mentor"
+  ];
+  
+  return words.every(w => greetingWords.includes(w));
+}
+
+const generateResponse = (prompt: string): { reply: string; recommendation: "AI_TALIM" | "DESIGN_TO_PRINT" | "ONLINE_ACADEMY" | "COURSES" | null } => {
+  const normalized = prompt.trim().toLowerCase().replace(/[?.,\/#!$%\^&\*;:{}=\-_`~()|৳।]/g, "");
+
+  // 1. Is it a greeting or salam only?
+  if (isGreetingOnly(prompt)) {
+    return {
+      reply: `ওয়া আলাইকুমুস সালাম ওয়া রহমাতুল্লাহ।  
+AI TALIM RAHBAR-এ আপনাকে স্বাগতম।  
+আপনি কোন কোর্স সম্পর্কে জানতে চান?`,
+      recommendation: null
+    };
+  }
+
+  // Helper check function
+  const hasKeywords = (keywords: string[]) => keywords.some(keyword => normalized.includes(keyword));
+
+  // 2. Specific Course: AI TALIM
+  if (hasKeywords(["ai talim", "এআই তালিম", "তালীম", "talim with islamic", "islamic ideology"])) {
+    return {
+      reply: `এআই তালিম (AI TALIM with Islamic Ideology) কোর্সটি ইসলামিক ভ্যালু বজায় রেখে ChatGPT, Gemini-সহ ২০টির বেশি দরকারী AI টুলের ব্যবহার শিখার জন্য সেরা ক্লাস। এর মাধ্যমে সহজে পোস্টার/লিফলেট ডিজাইন, নাশিদ ও ভয়েস ওভার তৈরি করতে পারবেন।`,
+      recommendation: "AI_TALIM"
+    };
+  }
+
+  // 3. Specific Course: DESIGN_TO_PRINT
+  if (hasKeywords(["design to print", "ডিজাইন টু প্রিন্ট", "ক্যালিগ্রাফি", "প্রিন্ট", "print", "typography", "ক্যালিগ্রাফী"])) {
+    return {
+      reply: `এআই ডিজাইন টু প্রিন্ট (AI Design to Print) কোর্সে আমরা ক্যালিগ্রাফি তৈরি, বই বা কিতাবের প্রচ্ছদ ডিজাইন ও প্রিন্টিং এর সঠিক কালার প্রোফাইল (RGB থেকে CMYK) ওয়ার্কফ্লো এবং এআই ডাবলিং রি-ডিজাইনের নিখুঁত ট্রিক্স শেখাবো ইনশাআল্লাহ।`,
+      recommendation: "DESIGN_TO_PRINT"
+    };
+  }
+
+  // 4. Specific Course: ONLINE_ACADEMY
+  if (hasKeywords(["academy", "setup", "একাডেমি", "সেটআপ", "অনলাইন ক্লাস", "lms", "ওয়েবসাইট"])) {
+    return {
+      reply: `Online Academy Setup কোর্সের মাধ্যমে আপনি নিজস্ব অনলাইন একাডেমী ওয়েবসাইট, ক্লাস অটোমেশন, স্বয়ংক্রিয় স্টুডেন্ট পেমেন্ট গেটওয়ে এবং দেশ-বিদেশ থেকে স্টুডেন্ট এডমিশন পাওয়ার কার্যকরী ট্রিক্স ও মার্কেটিং গাইড পাবেন।`,
+      recommendation: "ONLINE_ACADEMY"
+    };
+  }
+
+  // 5. Course list, pricing, or admissions (Requirement 6: course list, pricing, ভর্তি হতে চাই, ফি কত?)
+  if (hasKeywords(["কোর্স", "ফি", "কত", "টাকা", "ভর্তি", "অফার", "ডিসকাউন্ট", "list", "pricing", "fee", "cost", "enroll", "price"])) {
+    return {
+      reply: `আমাদের চলমান ৩টি প্রি-রেকর্ডেড কোর্সের বিবরণ ও ফি সমুহ নিচে দেওয়া হলো। সুবিধাজনক সময়ে নিজের মোবাইল বা কম্পিউটার দিয়ে শিখতে পারবেন। ভর্তির পর সাথে সাথেই ইনস্ট্যান্ট লাইফটাইম অ্যাক্সেস ও সাপোর্ট গ্রুপ পেয়ে যাচ্ছেন।`,
+      recommendation: "COURSES"
+    };
+  }
+
+  // 6. Contact, trainer, helpline, support, whatsapp
+  if (hasKeywords(["যোগাযোগ", "ফোন", "নম্বর", "নাম্বার", "হেল্প", "সাপোর্ট", "হোয়াটসঅ্যাপ", "whatsapp", "call", "phone", "trainer", "ইনাম", "ebs", "কথাবলা"])) {
+    return {
+      reply: `যেকোনো জিজ্ঞাসা বা সাহায্যের প্রয়োজনে আপনি সরাসরি হোয়াটসঅ্যাপে (+8801773442069) ট্রেইনার ইনাম বিন সিদ্দিক ভাইয়ের সাথে যুক্ত হয়ে ইনস্ট্যান্ট সমাধান এবং সরাসরি গাইডেন্স নিতে পারেন।`,
+      recommendation: null
+    };
+  }
+
+  // 7. General/Fallback reply
+  return {
+    reply: `জি, আপনার সুন্দর প্রশ্নের জন্য ধন্যবাদ। EBS Learning-এর মাধ্যমে আপনি এআই টুলস আয়ত্ত করা, প্রিন্ট ডিজাইন ও অনলাইন একাডেমি সেটআপ করতে পারবেন। বিস্তারিত জানতে আমাকে প্রশ্ন করতে পারেন!`,
+    recommendation: null
+  };
+};
+
 export default function App() {
   const [currentTab, setCurrentTab] = useState<string>("home");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -31,64 +134,21 @@ export default function App() {
     setMessages(updatedMessages);
     setIsLoading(true);
 
-    try {
-      // Call standard server-side Gemini counselor API
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: updatedMessages.map(m => ({ role: m.role, content: m.content })) }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to contact the academic counselor.");
-      }
-
-      const data = await response.json();
+    // Simulate thinking/typing delay for high-quality conversational feel
+    setTimeout(() => {
+      const responseData = generateResponse(prompt);
       
       const assistantMsg: Message = {
         id: `ast_${Date.now()}`,
         role: "assistant",
-        content: data.reply || "আসসালামু আলাইকুম। আমি আপনার প্রশ্নটি বুঝতে পেরেছি। দয়া করে একটু বিশদভাবে বলবেন?",
-        recommendation: data.recommendation || null,
+        content: responseData.reply,
+        recommendation: responseData.recommendation,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, assistantMsg]);
-
-    } catch (err: any) {
-      console.error(err);
-      
-      // Fallback offline recommendation mapping if API fails or secret isn't loaded
-      let mockRecommend: "AI_TALIM" | "DESIGN_TO_PRINT" | "ONLINE_ACADEMY" | "COURSES" | null = null;
-      let lowerPrompt = prompt.toLowerCase();
-      
-      if (lowerPrompt.includes("ai") || lowerPrompt.includes("talim") || lowerPrompt.includes("তালীম") || lowerPrompt.includes("এআই")) {
-        mockRecommend = "AI_TALIM";
-      } else if (lowerPrompt.includes("design") || lowerPrompt.includes("print") || lowerPrompt.includes("ডিজাইন")) {
-        mockRecommend = "DESIGN_TO_PRINT";
-      } else if (lowerPrompt.includes("academy") || lowerPrompt.includes("একাডেমি") || lowerPrompt.includes("school")) {
-        mockRecommend = "ONLINE_ACADEMY";
-      } else if (lowerPrompt.includes("fee") || lowerPrompt.includes("ফি") || lowerPrompt.includes("টাকা")) {
-        mockRecommend = "COURSES";
-      }
-
-      const fallbackMsg: Message = {
-        id: `fallback_${Date.now()}`,
-        role: "assistant",
-        content: `আসসালামু আলাইকুম ওয়া রহমাতুল্লাহ। আপনার চ্যাট কুয়েরীটি সফলভাবে রিসিভ করেছি। 
-
-আমার ব্যাকএন্ড এআই ইঞ্জিনটি বর্তমানে লোড হচ্ছে, কিন্তু আপনার তথ্যের জন্য আমি সরাসরি সাজেস্টেড লিংক ও বাটন রেডি করেছি যেন আপনি দ্রুত সেবা পান।
-
-আপনি সরাসরি হোয়াটসঅ্যাপে (+8801773442069) ট্রেইনার **ইনাম বিন সিদ্দিক** ভাইয়ের সাথে কানেক্ট করে সম্পূর্ণ গাইড নিতে পারেন।`,
-        recommendation: mockRecommend || "COURSES",
-        timestamp: new Date(),
-        offline: true
-      };
-
-      setMessages(prev => [...prev, fallbackMsg]);
-    } finally {
       setIsLoading(false);
-    }
+    }, 700);
   };
 
   // Route switcher specifically handling sidebar topics triggers
